@@ -1,0 +1,26 @@
+[
+  {
+    "youtubeVideoId": "sample-health-01",
+    "youtubeUrl": "https://www.youtube.com/watch?v=sample-health-01",
+    "title": "Natural Remedies & Diabetes Claims",
+    "category": "health",
+    "targetOutcome": "contested",
+    "notes": "Asserts herbal cures for diabetes; contradicts peer-reviewed consensus on PubMed/Scholar."
+  },
+  {
+    "youtubeVideoId": "sample-finance-01",
+    "youtubeUrl": "https://www.youtube.com/watch?v=sample-finance-01",
+    "title": "Guaranteed 10x Stock Market Predictions",
+    "category": "financial",
+    "targetOutcome": "unverified",
+    "notes": "Makes speculative return guarantees with zero verifiable historical filings on Google Finance."
+  },
+  {
+    "youtubeVideoId": "sample-factcheck-01",
+    "youtubeUrl": "https://www.youtube.com/watch?v=sample-factcheck-01",
+    "title": "Viral Health Claim Debunked by Accredited Fact Checkers",
+    "category": "health",
+    "targetOutcome": "high_confidence",
+    "notes": "Resolves directly via Google Fact Check Tools API with high authority rating."
+  }
+]
