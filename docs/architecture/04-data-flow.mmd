@@ -1,0 +1,76 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 Viewer / Judge
+    participant UI as 🖥️ Next.js Web (frontend)
+    participant API as ⚙️ Express API (backend)
+    participant Redis as ⚡ Redis Hot Cache
+    participant DB as 🗄️ Supabase (PostgreSQL)
+    participant Disk as 📂 /data/cache/*.json
+    participant SerpApi as 🔍 SerpApi Engines
+    participant FactCheck as ✅ Google Fact Check API
+    participant LLM as 🧠 LLM Provider
+
+    User->>UI: Submits YouTube Video URL
+    UI->>API: POST /api/videos/process { youtubeUrl }
+
+    Note over API,Redis: Check if video was already processed
+    API->>Redis: GET video:{youtubeVideoId}
+    alt Video Cache Hit (Hot Cache)
+        Redis-->>API: Return cached video analysis
+    else Video Cache Miss
+        API->>DB: Query videos table by youtubeVideoId
+        alt DB Hit
+            DB-->>API: Return stored claims & verdicts
+        else DB Miss
+            Note over API,SerpApi: Stage 1: Transcript Fetching
+            API->>SerpApi: youtube_video_transcript (1 credit)
+            SerpApi-->>API: Raw transcript segments with timestamps
+            API->>Disk: Write /data/cache/{videoId}_transcript.json
+
+            Note over API,LLM: Stage 2 & 3: Extraction & Classification
+            API->>LLM: Extract checkable claims (Health / Financial / General)
+            LLM-->>API: List of typed claims with timestamp_seconds
+
+            loop For Each Extracted Claim
+                Note over API,Redis: Deduplication Check (Normalized Claim Hash)
+                API->>Redis: GET claim:{claimHash}
+                alt Claim Cache Hit
+                    Redis-->>API: Return cached verdict & evidence
+                else Claim Cache Miss
+                    Note over API,FactCheck: Stage 4: Fact Check Lookup
+                    API->>FactCheck: claims:search?query={claimText}
+                    alt Fact Check Found
+                        FactCheck-->>API: claimReview result with textualRating
+                        API->>Disk: Write /data/cache/{claimId}_fact_check.json
+                    else No Fact Check Match
+                        Note over API,SerpApi: Stage 5: SerpApi Grounding Fallback
+                        alt Health Claim
+                            API->>SerpApi: google_scholar (query core claim)
+                        else Financial Claim
+                            API->>SerpApi: google_finance (ticker / entity)
+                        else General Claim
+                            API->>SerpApi: google (natural language query)
+                        end
+                        SerpApi-->>API: Organic results / financial snapshot
+                        API->>Disk: Write /data/cache/{claimId}_{sourceType}.json
+                    end
+
+                    Note over API,LLM: Stage 6: Scoring Algorithm
+                    API->>LLM: Evaluate Grounding Similarity (0.0 to 1.0)
+                    LLM-->>API: Grounding score
+                    API->>API: Compute Source Authority Score & Trust Score (Grounding × Authority)
+                    API->>API: Assign Confidence Label (High Confidence / Contested / Unverified)
+
+                    Note over API,DB: Write-Through Persistence
+                    API->>DB: Insert claim, evidence, and verdict records
+                    API->>Redis: SET claim:{claimHash} (cached verdict)
+                end
+            end
+
+            API->>DB: Update video record as processed
+            API->>Redis: SET video:{youtubeVideoId}
+        end
+    end
+
+    API-->>UI: Return timestamped claim ledger + video summary
+    UI-->>User: Render interactive claim ledger synchronized with video player

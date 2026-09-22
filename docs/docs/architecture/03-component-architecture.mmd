@@ -1,0 +1,71 @@
+graph TB
+    %% Level 3: Component Architecture Diagram for backend
+
+    subgraph ApiBoundary ["backend Container Boundary"]
+        subgraph HttpLayer ["HTTP Routing & Controllers"]
+            VideoRouter["🛣️ Video Router<br/><i>/api/videos/*</i>"]
+            ClaimRouter["🛣️ Claim Router<br/><i>/api/claims/*</i>"]
+            VideoController["🎮 Video Controller<br/><i>Validates request schema & dispatches jobs</i>"]
+            ClaimController["🎮 Claim Controller<br/><i>Formats claim & evidence responses</i>"]
+        end
+
+        subgraph PipelineLayer ["Verification Pipeline (backend/src/pipeline)"]
+            PipelineOrchestrator["🎼 Pipeline Orchestrator<br/><i>Coordinates Stages 1 through 7</i>"]
+            Stage1["Stage 1: Transcript Fetcher<br/><i>Parses YouTube ID & retrieves timestamped transcript</i>"]
+            Stage2["Stage 2: Claim Extractor<br/><i>Prompts LLM for factual, checkable assertions</i>"]
+            Stage3["Stage 3: Claim Classifier<br/><i>Categorizes claim: Health, Financial, or General</i>"]
+            Stage4["Stage 4: Fact Check Lookup<br/><i>Queries Google Fact Check Tools API claims:search</i>"]
+            Stage5["Stage 5: SerpApi Grounding Engine<br/><i>Routes by category: Scholar, Finance, or Search</i>"]
+            Stage6["Stage 6: Scoring Engine<br/><i>Computes Grounding × Authority = Trust Score</i>"]
+            Stage7["Stage 7: Ledger Formatter<br/><i>Builds final timestamped verdict ledger</i>"]
+        end
+
+        subgraph ClientAdapters ["External Service Adapters"]
+            SerpApiClient["🔌 SerpApi Client<br/><i>Handles Transcript, Scholar, Finance & Search engines</i>"]
+            FactCheckClient["🔌 Google Fact Check Client<br/><i>Handles claims:search query & claimReview mapping</i>"]
+            LlmClient["🔌 LLM Client<br/><i>Structured output parser for claim extraction & similarity</i>"]
+        end
+
+        subgraph PersistenceLayer ["Persistence & Caching Layer"]
+            WriteThroughCache["🛡️ Write-Through Cache Manager<br/><i>Enforces lookup & write order: Redis → DB → Disk → API</i>"]
+            VideoRepo["📦 Video Repository<br/><i>CRUD operations via Drizzle ORM</i>"]
+            ClaimRepo["📦 Claim & Evidence Repository<br/><i>Stores claims, evidence links & verdicts</i>"]
+            DiskWriter["💾 Filesystem Cache Writer<br/><i>Commits raw JSON to /data/cache/</i>"]
+        end
+    end
+
+    VideoRouter --> VideoController
+    ClaimRouter --> ClaimController
+
+    VideoController --> PipelineOrchestrator
+    ClaimController --> ClaimRepo
+
+    PipelineOrchestrator --> Stage1
+    Stage1 --> Stage2
+    Stage2 --> Stage3
+    Stage3 --> Stage4
+    Stage4 --> Stage5
+    Stage5 --> Stage6
+    Stage6 --> Stage7
+
+    Stage1 --> SerpApiClient
+    Stage2 --> LlmClient
+    Stage3 --> LlmClient
+    Stage4 --> FactCheckClient
+    Stage5 --> SerpApiClient
+    Stage6 --> LlmClient
+
+    Stage1 & Stage4 & Stage5 --> WriteThroughCache
+    WriteThroughCache --> DiskWriter
+    WriteThroughCache --> VideoRepo
+    WriteThroughCache --> ClaimRepo
+
+    classDef http fill:#6366f1,stroke:#4f46e5,stroke-width:2px,color:#ffffff;
+    classDef pipe fill:#0ea5e9,stroke:#0284c7,stroke-width:2px,color:#ffffff;
+    classDef adapter fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#ffffff;
+    classDef persist fill:#10b981,stroke:#059669,stroke-width:2px,color:#ffffff;
+
+    class VideoRouter,ClaimRouter,VideoController,ClaimController http;
+    class PipelineOrchestrator,Stage1,Stage2,Stage3,Stage4,Stage5,Stage6,Stage7 pipe;
+    class SerpApiClient,FactCheckClient,LlmClient adapter;
+    class WriteThroughCache,VideoRepo,ClaimRepo,DiskWriter persist;

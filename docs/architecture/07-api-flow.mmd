@@ -1,0 +1,64 @@
+sequenceDiagram
+    autonumber
+    actor Client as 🖥️ Next.js Web Client
+    participant Router as 🛣️ Express Router
+    participant Validator as 🛡️ Zod Validation Middleware
+    participant Controller as 🎮 Video/Claim Controller
+    participant Service as ⚙️ Verification Service
+    participant Cache as ⚡ Redis & DB Cache
+    participant ExtAPI as 🌐 External APIs (SerpApi/FactCheck)
+
+    %% Scenario A: Process Video Endpoint
+    rect rgb(240, 249, 255)
+    Note over Client,ExtAPI: Flow A: Process Video (POST /api/videos/process)
+    Client->>Router: POST /api/videos/process { youtubeUrl: "https://youtu.be/..." }
+    Router->>Validator: Validate body against processVideoSchema
+    alt Invalid URL Format
+        Validator-->>Client: 400 Bad Request { error: { code: "INVALID_URL", message: "..." } }
+    else Valid URL
+        Validator->>Controller: handleProcessVideo(req, res)
+        Controller->>Service: processVideo({ youtubeUrl })
+        Service->>Cache: Check for cached analysis
+        alt Fully Cached
+            Cache-->>Service: Return cached claim ledger
+            Service-->>Controller: Cached ProcessVideoResult
+            Controller-->>Client: 200 OK { videoId, status: "completed", claims: [...] }
+        else Cache Miss
+            Service->>ExtAPI: Execute Stage 1-7 Pipeline
+            ExtAPI-->>Service: Fresh transcripts, evidence & verdicts
+            Service->>Cache: Write to Disk, Supabase & Redis
+            Service-->>Controller: Fresh ProcessVideoResult
+            Controller-->>Client: 201 Created { videoId, status: "completed", claims: [...] }
+        end
+    end
+    end
+
+    %% Scenario B: Get Claims by Video ID
+    rect rgb(245, 243, 255)
+    Note over Client,ExtAPI: Flow B: Get Video Claims (GET /api/videos/:videoId/claims)
+    Client->>Router: GET /api/videos/:videoId/claims
+    Router->>Validator: Validate videoId UUID format
+    Validator->>Controller: handleGetVideoClaims(req, res)
+    Controller->>Service: getClaimsForVideo(videoId)
+    alt Video Not Found
+        Service-->>Controller: null
+        Controller-->>Client: 404 Not Found { error: { code: "VIDEO_NOT_FOUND" } }
+    else Video Exists
+        Service->>Cache: Query DB for claims and verdicts
+        Cache-->>Service: Claim records list with verdicts
+        Service-->>Controller: Formatted claim array
+        Controller-->>Client: 200 OK { videoId, claimsCount, claims: [...] }
+    end
+    end
+
+    %% Scenario C: Inspect Specific Claim Evidence
+    rect rgb(236, 253, 245)
+    Note over Client,ExtAPI: Flow C: Get Claim Evidence Details (GET /api/claims/:claimId/evidence)
+    Client->>Router: GET /api/claims/:claimId/evidence
+    Router->>Controller: handleGetClaimEvidence(req, res)
+    Controller->>Service: getEvidenceByClaimId(claimId)
+    Service->>Cache: Fetch evidence rows & link to /data/cache/*.json
+    Cache-->>Service: Evidence items with rawResponseCachePath
+    Service-->>Controller: Formatted evidence payload
+    Controller-->>Client: 200 OK { claimId, evidence: [...] }
+    end

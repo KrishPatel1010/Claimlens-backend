@@ -1,0 +1,33 @@
+sequenceDiagram
+    autonumber
+    actor User as 👤 Public Anonymous User
+    participant Frontend as 🖥️ Next.js Web App
+    participant Middleware as 🛡️ Express API Middleware
+    participant Controller as 🎮 Express Controller / Services
+    participant ProtectedResource as 🎯 Verification Pipeline
+
+    Note over User,ProtectedResource: v1 Hackathon Architecture: Anonymous Public Access (No User Accounts / Login)
+
+    User->>Frontend: Accesses web interface & submits video URL
+    Frontend->>Middleware: POST /api/videos/process (Public request, no Bearer token)
+
+    Note over Middleware: Security Enforcement without Authentication
+    Middleware->>Middleware: 1. CORS Origin Validation
+    Middleware->>Middleware: 2. Rate Limiting Middleware (IP-based protection against quota abuse)
+    Middleware->>Middleware: 3. Input Validation (Zod schema checking for YouTube URL format)
+
+    alt Security / Rate Limit Check Fails
+        Middleware-->>Frontend: 429 Too Many Requests / 400 Bad Request
+        Frontend-->>User: Displays error message
+    else Security Checks Pass
+        Middleware->>Controller: Forwards validated request
+        Controller->>ProtectedResource: Executes verification pipeline
+        ProtectedResource-->>Controller: Returns verdict data
+        Controller-->>Frontend: 200 OK with claim ledger payload
+        Frontend-->>User: Displays verified claims ledger
+    end
+
+    Note over User,ProtectedResource: -------------------------------------------------------------
+    Note over User,ProtectedResource: Future Authentication Extension Point [STATUS: TBD / DEFERRED]
+    Note over User,ProtectedResource: In v2 (Post-Hackathon), an Auth Middleware (e.g. Supabase Auth / JWT)
+    Note over User,ProtectedResource: will attach at step 2 to verify sessions for saved history & user accounts.

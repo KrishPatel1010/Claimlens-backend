@@ -1,8 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import { processVideoRequestSchema } from "../schemas/video-requests.schema.js";
-import { extractYouTubeVideoId } from "../utils/youtube-url-parser.js";
-import { executeStage1TranscriptFetching } from "../pipeline/stages/stage-1-transcript.js";
+import { executeVerificationPipeline } from "../pipeline/pipeline-orchestrator.js";
 import { findVideoByYouTubeId } from "../repositories/video-repository.js";
+import { findFullClaimLedgerByVideoId } from "../repositories/claim-repository.js";
 import { createValidationError, createNotFoundError } from "../errors/app-error.js";
 
 export const processVideoHandler = async (
@@ -22,23 +22,21 @@ export const processVideoHandler = async (
     }
 
     const { youtubeUrl, videoTitle } = parseResult.data;
-    const extractedVideoId = extractYouTubeVideoId(youtubeUrl);
 
-    const stage1Result = await executeStage1TranscriptFetching({
-      youtubeVideoId: extractedVideoId,
+    const pipelineResult = await executeVerificationPipeline({
       youtubeUrl,
       videoTitle: videoTitle ?? null,
     });
 
     outgoingHttpResponse.status(200).json({
-      videoId: stage1Result.videoRecord.id,
-      youtubeVideoId: stage1Result.videoRecord.youtubeVideoId,
-      youtubeUrl: stage1Result.videoRecord.youtubeUrl,
-      title: stage1Result.videoRecord.title,
-      cacheStatus: stage1Result.cacheStatus,
-      rawResponseCachePath: stage1Result.rawResponseCachePath,
-      segmentCount: stage1Result.transcriptSegments.length,
-      transcriptSegments: stage1Result.transcriptSegments,
+      videoId: pipelineResult.video.id,
+      youtubeVideoId: pipelineResult.video.youtubeVideoId,
+      youtubeUrl: pipelineResult.video.youtubeUrl,
+      title: pipelineResult.video.title,
+      processedAt: pipelineResult.video.processedAt,
+      claimsCount: pipelineResult.claimsCount,
+      verifiedLedger: pipelineResult.verifiedLedger,
+      cacheSummary: pipelineResult.cacheSummary,
     });
   } catch (caughtError) {
     nextMiddlewareFunction(caughtError);
@@ -63,8 +61,11 @@ export const getVideoDetailsHandler = async (
       throw createNotFoundError("Video", requestedVideoId);
     }
 
+    const fullClaimLedger = await findFullClaimLedgerByVideoId(foundVideoRecord.id);
+
     outgoingHttpResponse.status(200).json({
       video: foundVideoRecord,
+      ledger: fullClaimLedger,
     });
   } catch (caughtError) {
     nextMiddlewareFunction(caughtError);

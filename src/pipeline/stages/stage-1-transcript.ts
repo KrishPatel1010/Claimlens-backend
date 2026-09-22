@@ -23,7 +23,7 @@ import { createValidationError } from "../../errors/app-error.js";
 export interface Stage1TranscriptInput {
   youtubeVideoId: string;
   youtubeUrl: string;
-  videoTitle?: string | null;
+  videoTitle?: string | null | undefined;
 }
 
 export interface Stage1TranscriptResult {

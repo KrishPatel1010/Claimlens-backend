@@ -1,0 +1,35 @@
+graph TB
+    %% Level 1: System Context Diagram for ClaimLens
+
+    subgraph Users ["Actors"]
+        Viewer["👤 YouTube Viewer / Researcher<br/><i>Watches health/finance content & seeks verification</i>"]
+        Judge["⚖️ Hackathon Judge<br/><i>Evaluates live application, evidence trail & SerpApi integration</i>"]
+    end
+
+    subgraph SystemBoundary ["ClaimLens System Boundary"]
+        ClaimLens["🎯 ClaimLens<br/><b>YouTube Health & Finance Claim Verifier</b><br/><i>Accepts video URLs, extracts factual claims, grounds evidence via APIs, computes Trust Scores & renders a timestamped claim ledger</i>"]
+    end
+
+    subgraph ExternalServices ["External Systems & APIs"]
+        YouTube["📺 YouTube Platform<br/><i>Hosts source videos and plays back timestamped media</i>"]
+        SerpApiTranscript["🔍 SerpApi YouTube Transcript Engine<br/><i>Extracts time-indexed transcripts from video IDs</i>"]
+        FactCheckAPI["✅ Google Fact Check Tools API<br/><i>Free API querying claimReview database for existing verdicts</i>"]
+        SerpApiGrounding["📚 SerpApi Grounding Engines<br/><i>Google Scholar (Health), Google Finance (Financial), Google Search (General)</i>"]
+        LLMProvider["🧠 LLM Inference Provider<br/><i>Performs claim extraction, classification & semantic grounding analysis</i>"]
+    end
+
+    Viewer -->|"1. Submits YouTube URL & inspects claim ledger"| ClaimLens
+    Judge -->|"2. Reviews verdicts, logs & committed evidence trail"| ClaimLens
+    ClaimLens -->|"Embeds video player for synchronized playback"| YouTube
+    ClaimLens -->|"Queries transcript with offsets (1 credit/video)"| SerpApiTranscript
+    ClaimLens -->|"Queries claims:search for existing fact checks (free)"| FactCheckAPI
+    ClaimLens -->|"Grounds unverified claims via Scholar / Finance / Search"| SerpApiGrounding
+    ClaimLens -->|"Extracts checkable claims & computes similarity"| LLMProvider
+
+    classDef primary fill:#2563eb,stroke:#1d4ed8,stroke-width:2px,color:#ffffff;
+    classDef actor fill:#0f172a,stroke:#334155,stroke-width:2px,color:#ffffff;
+    classDef external fill:#f1f5f9,stroke:#64748b,stroke-width:2px,color:#0f172a;
+
+    class ClaimLens primary;
+    class Viewer,Judge actor;
+    class YouTube,SerpApiTranscript,FactCheckAPI,SerpApiGrounding,LLMProvider external;

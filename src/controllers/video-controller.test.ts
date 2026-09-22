@@ -1,14 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 import { createExpressApplication } from "../app.js";
-import * as stage1Module from "../pipeline/stages/stage-1-transcript.js";
+import * as pipelineOrchestratorModule from "../pipeline/pipeline-orchestrator.js";
 import { clearInMemoryVideoStore, createVideoRecord } from "../repositories/video-repository.js";
+import { clearInMemoryClaimStores } from "../repositories/claim-repository.js";
 
 describe("Video Controller HTTP Integration", () => {
   const application = createExpressApplication();
 
   beforeEach(() => {
     clearInMemoryVideoStore();
+    clearInMemoryClaimStores();
     vi.restoreAllMocks();
   });
 
@@ -32,20 +34,44 @@ describe("Video Controller HTTP Integration", () => {
     expect(httpResponse.body.error.code).toBe("VALIDATION_ERROR");
   });
 
-  it("should return 200 with structured transcript data on valid YouTube URL", async () => {
-    vi.spyOn(stage1Module, "executeStage1TranscriptFetching").mockResolvedValueOnce({
-      videoRecord: {
+  it("should return 200 with structured verified claim ledger on valid YouTube URL", async () => {
+    vi.spyOn(pipelineOrchestratorModule, "executeVerificationPipeline").mockResolvedValueOnce({
+      video: {
         id: "123e4567-e89b-12d3-a456-426614174000",
         youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         youtubeVideoId: "dQw4w9WgXcQ",
         title: "Rick Astley - Never Gonna Give You Up",
-        processedAt: null,
+        processedAt: new Date(),
       },
-      transcriptSegments: [
-        { start: 0.1, duration: 2.0, text: "We're no strangers to love" },
+      claimsCount: 1,
+      verifiedLedger: [
+        {
+          claimId: "claim-uuid-1",
+          timestampSeconds: 12,
+          rawText: "Drinking green tea burns 500 calories per day.",
+          category: "health",
+          trustScore: 0.85,
+          confidenceLabel: "high_confidence",
+          verifiedClaimText: "Drinking green tea burns 500 calories per day.",
+          evidence: [
+            {
+              sourceType: "serpapi_scholar",
+              sourceUrl: "https://scholar.google.com/article1",
+              sourceDomain: "nih.gov",
+              sourceAuthorityScore: 1.0,
+              matchedText: "Green tea catechins show modest metabolic rate increases.",
+              groundingSimilarity: 0.85,
+              rawResponseCachePath: "/data/cache/claim-uuid-1_serpapi_scholar.json",
+            },
+          ],
+          conflictingClaims: [],
+        },
       ],
-      cacheStatus: "live_api_fetch",
-      rawResponseCachePath: "/data/cache/dQw4w9WgXcQ_transcript.json",
+      cacheSummary: {
+        videoCacheStatus: "live_api_fetch",
+        cachedClaimsCount: 0,
+        liveGroundingCount: 1,
+      },
     });
 
     const httpResponse = await request(application)
@@ -57,9 +83,10 @@ describe("Video Controller HTTP Integration", () => {
 
     expect(httpResponse.status).toBe(200);
     expect(httpResponse.body.youtubeVideoId).toBe("dQw4w9WgXcQ");
-    expect(httpResponse.body.cacheStatus).toBe("live_api_fetch");
-    expect(httpResponse.body.segmentCount).toBe(1);
-    expect(httpResponse.body.transcriptSegments[0].text).toBe("We're no strangers to love");
+    expect(httpResponse.body.claimsCount).toBe(1);
+    expect(httpResponse.body.verifiedLedger).toHaveLength(1);
+    expect(httpResponse.body.verifiedLedger[0].trustScore).toBe(0.85);
+    expect(httpResponse.body.verifiedLedger[0].confidenceLabel).toBe("high_confidence");
   });
 
   it("should return 404 when querying an unknown video ID", async () => {
@@ -70,7 +97,7 @@ describe("Video Controller HTTP Integration", () => {
     expect(httpResponse.body.error.code).toBe("RESOURCE_NOT_FOUND");
   });
 
-  it("should return 200 when querying an existing video record", async () => {
+  it("should return 200 when querying an existing video record with empty ledger", async () => {
     await createVideoRecord({
       youtubeVideoId: "existing_id1",
       youtubeUrl: "https://www.youtube.com/watch?v=existing_id1",
@@ -83,5 +110,6 @@ describe("Video Controller HTTP Integration", () => {
 
     expect(httpResponse.status).toBe(200);
     expect(httpResponse.body.video.youtubeVideoId).toBe("existing_id1");
+    expect(httpResponse.body.ledger).toEqual([]);
   });
 });

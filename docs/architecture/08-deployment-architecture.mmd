@@ -1,0 +1,56 @@
+graph TB
+    %% Deployment Architecture for ClaimLens
+
+    subgraph DevEnvironment ["Local Development Environment"]
+        Developer["👨‍💻 Developer / Contributor"]
+        LocalGit["📦 Local Git Repo<br/><i>Workspace root</i>"]
+        LocalCacheDir["📂 Local /data/cache/<br/><i>Committed raw JSON responses</i>"]
+    end
+
+    subgraph VersionControl ["Source Control & Verification"]
+        GitHub["🐙 GitHub Repository<br/><b>Public Repo for Hackathon Submission</b><br/><i>Houses source code & committed /data/cache/*.json proof</i>"]
+        JudgeInspection["⚖️ Hackathon Judges<br/><i>Directly inspect committed JSON files to verify SerpApi usage</i>"]
+    end
+
+    subgraph HostingInfrastructure ["Application Runtime & Hosting"]
+        WebHosting["🌐 Frontend Host (e.g., Vercel / Node.js)<br/><b>Next.js App (frontend)</b><br/><i>Serves SSR / client bundle on Port 3000</i>"]
+        ApiHosting["⚙️ Backend Host (e.g., Render / Railway / Node.js)<br/><b>Express API (backend)</b><br/><i>Executes pipeline on Port 4000</i>"]
+    end
+
+    subgraph ManagedDataServices ["Managed Data Infrastructure"]
+        SupabaseCloud[("🗄️ Supabase PostgreSQL<br/><i>Managed Cloud DB via Drizzle ORM</i>")]
+        RedisCloud[("⚡ Redis Cloud / Upstash<br/><i>Managed in-memory cache for dedup</i>")]
+    end
+
+    subgraph ExternalProviders ["External Service APIs"]
+        SerpApiProvider["🔍 SerpApi Services<br/><i>Transcript, Scholar, Finance, Search</i>"]
+        FactCheckProvider["✅ Google Fact Check Tools API<br/><i>claims:search endpoint</i>"]
+        LlmProvider["🧠 LLM API Provider<br/><i>Model inference endpoints</i>"]
+    end
+
+    Developer -->|"git commit & push"| LocalGit
+    LocalGit --> LocalCacheDir
+    LocalGit -->|"Push to origin main"| GitHub
+    GitHub -->|"Direct repository inspection"| JudgeInspection
+
+    GitHub -->|"Deploy Web"| WebHosting
+    GitHub -->|"Deploy API"| ApiHosting
+
+    WebHosting -->|"REST API Calls over HTTPS"| ApiHosting
+    ApiHosting -->|"Connection Pool (pg / Drizzle)"| SupabaseCloud
+    ApiHosting -->|"TCP / Redis Protocol"| RedisCloud
+    ApiHosting -->|"HTTPS / API Key"| SerpApiProvider
+    ApiHosting -->|"HTTPS / Google Cloud API Key"| FactCheckProvider
+    ApiHosting -->|"HTTPS / API Key"| LlmProvider
+
+    classDef dev fill:#475569,stroke:#334155,stroke-width:2px,color:#ffffff;
+    classDef git fill:#0f172a,stroke:#000000,stroke-width:2px,color:#ffffff;
+    classDef host fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#ffffff;
+    classDef data fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
+    classDef ext fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a;
+
+    class Developer,LocalGit,LocalCacheDir dev;
+    class GitHub,JudgeInspection git;
+    class WebHosting,ApiHosting host;
+    class SupabaseCloud,RedisCloud data;
+    class SerpApiProvider,FactCheckProvider,LlmProvider ext;

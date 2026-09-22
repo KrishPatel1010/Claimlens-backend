@@ -1,0 +1,45 @@
+erDiagram
+    %% ClaimLens Relational Schema (PostgreSQL / Supabase via Drizzle ORM)
+    %% Source of truth: Project/02_Technical_Spec.md Section 9.2
+
+    VIDEOS ||--o{ CLAIMS : "contains"
+    CLAIMS ||--o{ EVIDENCE : "grounded_by"
+    CLAIMS ||--|| VERDICTS : "evaluated_into"
+
+    VIDEOS {
+        uuid id PK "default_random()"
+        text youtube_url "Original submitted URL"
+        text youtube_video_id UK "Parsed 11-char YouTube ID"
+        text title "Video title metadata"
+        timestamp processed_at "Timestamp of completed processing"
+    }
+
+    CLAIMS {
+        uuid id PK "default_random()"
+        uuid video_id FK "References VIDEOS(id)"
+        integer timestamp_seconds "Offset in video where claim occurs"
+        text raw_text "Verbatim claim extracted from transcript"
+        claim_category category "ENUM: health | financial | general"
+        claim_status status "ENUM: pending | resolved (default: pending)"
+    }
+
+    EVIDENCE {
+        uuid id PK "default_random()"
+        uuid claim_id FK "References CLAIMS(id)"
+        source_type source_type "ENUM: fact_check_api | serpapi_scholar | serpapi_finance | serpapi_search"
+        text source_url "URL of external grounding evidence"
+        text source_domain "Extracted domain for authority scoring"
+        real source_authority_score "Score based on domain tier (0.1 - 1.0)"
+        text matched_text "Relevant passage or snippet from source"
+        real grounding_similarity "Semantic similarity score (0.0 - 1.0)"
+        text raw_response_cache_path "Path to committed /data/cache/*.json proof"
+    }
+
+    VERDICTS {
+        uuid id PK "default_random()"
+        uuid claim_id FK,UK "References CLAIMS(id) - 1:1 relationship"
+        real trust_score "Computed Grounding Score * Authority Score"
+        confidence_label confidence_label "ENUM: high_confidence | contested | unverified"
+        text verified_claim_text "Consensus or corrected factual statement"
+        jsonb conflicting_claims "Array of alternative or contradicting claims"
+    }

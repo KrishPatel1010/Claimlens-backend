@@ -1,0 +1,51 @@
+graph TB
+    %% Level 2: Container Architecture Diagram for ClaimLens
+
+    User["👤 Viewer / Judge<br/><i>Web Browser</i>"]
+
+    subgraph ClaimLensApp ["ClaimLens Application Environment"]
+        subgraph WebContainer ["Frontend Container: frontend/"]
+            NextApp["🖥️ Next.js Web App<br/><b>TypeScript, React, App Router</b><br/><i>Renders URL input, embedded YouTube player, and timestamp-synchronized claim ledger</i>"]
+        end
+
+        subgraph ApiContainer ["Backend Container: backend/"]
+            ExpressApi["⚙️ Express REST API<br/><b>Node.js, Express, TypeScript</b><br/><i>Orchestrates the 7-Stage pipeline, enforces write-through caching, and serves endpoints</i>"]
+        end
+
+        subgraph StorageLayer ["Multi-Tier Data Storage"]
+            RedisCache[("⚡ Redis Hot Cache<br/><b>In-Memory Key-Value</b><br/><i>Fast dedup cache keyed by normalized claim hash; optional job queue</i>")]
+            SupabaseDb[("🗄️ Supabase PostgreSQL<br/><b>Managed Relational DB (Drizzle ORM)</b><br/><i>Structured source of truth: videos, claims, evidence, verdicts</i>")]
+            DiskCache[("📂 Raw Repo Evidence Cache<br/><b>Filesystem: /data/cache/*.json</b><br/><i>Permanent raw external API responses committed to Git for judge review</i>")]
+        end
+    end
+
+    subgraph ExternalApis ["Third-Party External Services"]
+        SerpApi["🔍 SerpApi Suite<br/><i>Transcript, Scholar, Finance, Search engines</i>"]
+        FactCheck["✅ Google Fact Check Tools API<br/><i>claims:search endpoint</i>"]
+        LlmApi["🧠 LLM API Provider<br/><i>Extraction, classification, grounding similarity</i>"]
+    end
+
+    User -->|"HTTPS / User Interaction"| NextApp
+    NextApp -->|"HTTP / REST API Requests"| ExpressApi
+
+    ExpressApi -->|"1. Check hot cache (0 credit)"| RedisCache
+    ExpressApi -->|"2. Check structured records (0 credit)"| SupabaseDb
+    ExpressApi -->|"3. Write raw response proof files"| DiskCache
+    ExpressApi -->|"4. Persist relational entities & cache links"| SupabaseDb
+    ExpressApi -->|"5. Store normalized dedup keys"| RedisCache
+
+    ExpressApi -->|"Fetch transcripts & grounding evidence (cache miss only)"| SerpApi
+    ExpressApi -->|"Fetch existing fact-check reviews (free tier)"| FactCheck
+    ExpressApi -->|"Prompt for extraction, classification & scoring"| LlmApi
+
+    classDef web fill:#0284c7,stroke:#0369a1,stroke-width:2px,color:#ffffff;
+    classDef api fill:#4f46e5,stroke:#4338ca,stroke-width:2px,color:#ffffff;
+    classDef store fill:#059669,stroke:#047857,stroke-width:2px,color:#ffffff;
+    classDef external fill:#f8fafc,stroke:#64748b,stroke-width:2px,color:#0f172a;
+    classDef user fill:#0f172a,stroke:#334155,stroke-width:2px,color:#ffffff;
+
+    class NextApp web;
+    class ExpressApi api;
+    class RedisCache,SupabaseDb,DiskCache store;
+    class SerpApi,FactCheck,LlmApi external;
+    class User user;
