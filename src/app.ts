@@ -3,6 +3,7 @@ import type { Express, Request, Response } from "express";
 import cors from "cors";
 import { requestLoggerMiddleware } from "./middleware/request-logger.js";
 import { errorHandlerMiddleware } from "./middleware/error-handler.js";
+import { videoRouter } from "./routes/video-routes.js";
 import { createNotFoundError } from "./errors/app-error.js";
 
 export const createExpressApplication = (): Express => {
@@ -19,6 +20,8 @@ export const createExpressApplication = (): Express => {
       timestamp: new Date().toISOString(),
     });
   });
+
+  application.use("/api/videos", videoRouter);
 
   // Catch unmatched routes and convert to NotFoundError
   application.use((incomingRequest: Request): void => {
