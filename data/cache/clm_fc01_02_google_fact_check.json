@@ -1,0 +1,22 @@
+{
+  "claims": [
+    {
+      "text": "Vaccines undergo multi-phase clinical safety trials before receiving regulatory market approval.",
+      "claimant": "Public Health Communications",
+      "claimDate": "2023-11-05T00:00:00Z",
+      "claimReview": [
+        {
+          "publisher": {
+            "name": "World Health Organization",
+            "site": "who.int"
+          },
+          "url": "https://www.who.int/news-room/feature-stories/detail/how-are-vaccines-developed",
+          "title": "Rigorous phase 1-3 clinical testing requirements for human vaccine approval",
+          "reviewDate": "2023-11-10T00:00:00Z",
+          "textualRating": "True",
+          "languageCode": "en"
+        }
+      ]
+    }
+  ]
+}

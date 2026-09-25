@@ -1,0 +1,22 @@
+{
+  "claims": [
+    {
+      "text": "Drinking boiled lemon water and baking soda alkalizes blood pH and cures viral infections.",
+      "claimant": "Social Media Posts",
+      "claimDate": "2024-03-12T00:00:00Z",
+      "claimReview": [
+        {
+          "publisher": {
+            "name": "AFP Fact Check",
+            "site": "factcheck.afp.com"
+          },
+          "url": "https://factcheck.afp.com/doc.afp.com.34MK8VD",
+          "title": "Consuming lemon juice and baking soda does not change arterial pH or kill viruses",
+          "reviewDate": "2024-03-15T00:00:00Z",
+          "textualRating": "False",
+          "languageCode": "en"
+        }
+      ]
+    }
+  ]
+}

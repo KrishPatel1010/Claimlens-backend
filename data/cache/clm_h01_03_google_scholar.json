@@ -1,0 +1,26 @@
+{
+  "search_metadata": {
+    "id": "serp_demo_scholar_h01_03",
+    "status": "Success",
+    "engine": "google_scholar",
+    "query": "aerobic walking insulin sensitivity type 2 diabetes",
+    "created_at": "2026-09-25T08:30:30.000Z"
+  },
+  "search_parameters": {
+    "engine": "google_scholar",
+    "q": "aerobic walking insulin sensitivity type 2 diabetes",
+    "hl": "en"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Exercise training and insulin resistance: The role of skeletal muscle glucose transport",
+      "result_id": "scholar_res_003",
+      "link": "https://scholar.google.com/scholar?q=aerobic+walking+insulin+sensitivity+type+2+diabetes",
+      "snippet": "A 30-minute daily walking regimen improves GLUT-4 transporter translocation and peripheral glucose disposal by 26% in insulin-resistant subjects.",
+      "publication_info": {
+        "summary": "Diabetes Care, 2021"
+      }
+    }
+  ]
+}

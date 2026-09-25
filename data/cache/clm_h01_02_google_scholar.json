@@ -1,0 +1,26 @@
+{
+  "search_metadata": {
+    "id": "serp_demo_scholar_h01_02",
+    "status": "Success",
+    "engine": "google_scholar",
+    "query": "cinnamon hba1c reduction clinical evaluation",
+    "created_at": "2026-09-25T08:30:15.000Z"
+  },
+  "search_parameters": {
+    "engine": "google_scholar",
+    "q": "cinnamon hba1c reduction clinical evaluation",
+    "hl": "en"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "Cinnamon use in type 2 diabetes: An updated systematic review and meta-analysis",
+      "result_id": "scholar_res_002",
+      "link": "https://scholar.google.com/scholar?q=cinnamon+hba1c+reduction+clinical+evaluation",
+      "snippet": "Systematic review of 10 randomized trials showed cinnamon produced a non-significant mean HbA1c reduction of 0.09% compared to standard metformin control.",
+      "publication_info": {
+        "summary": "Annals of Family Medicine, 2022"
+      }
+    }
+  ]
+}

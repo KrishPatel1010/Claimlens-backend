@@ -1,0 +1,17 @@
+{
+  "search_metadata": {
+    "id": "serp_demo_finance_f01_02",
+    "status": "Success",
+    "engine": "google_finance",
+    "query": ".INX:INDEXSP historical rolling returns",
+    "created_at": "2026-09-25T08:35:25.000Z"
+  },
+  "search_parameters": {
+    "engine": "google_finance",
+    "q": ".INX:INDEXSP"
+  },
+  "markets": {
+    "summary": "S&P 500 Index (.INX) - Historical rolling annual return",
+    "data_snippet": "The historical annualized compound total return of the S&P 500 Index over any 20-year rolling window since 1926 has averaged approximately 10.2%."
+  }
+}

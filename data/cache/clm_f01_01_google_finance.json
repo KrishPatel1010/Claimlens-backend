@@ -1,0 +1,17 @@
+{
+  "search_metadata": {
+    "id": "serp_demo_finance_f01_01",
+    "status": "Success",
+    "engine": "google_finance",
+    "query": "SOXX:NASDAQ semiconductor guaranteed returns",
+    "created_at": "2026-09-25T08:35:10.000Z"
+  },
+  "search_parameters": {
+    "engine": "google_finance",
+    "q": "SOXX:NASDAQ"
+  },
+  "markets": {
+    "summary": "iShares Semiconductor ETF (SOXX) - NASDAQ",
+    "disclaimer": "No financial regulator or market filing supports guaranteed multi-bagger performance for semiconductor exchange-traded funds."
+  }
+}
