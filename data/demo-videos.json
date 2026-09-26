@@ -2,25 +2,25 @@
   {
     "youtubeVideoId": "sample-health-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-health-01",
-    "title": "Reversing Type 2 Diabetes & Dietary Guidelines (TEDx)",
+    "title": "Reversing Type 2 Diabetes Starts with Ignoring Guidelines | Dr. Sarah Hallberg (TEDx)",
     "category": "health",
     "targetOutcome": "contested",
-    "notes": "Dr. Sarah Hallberg presents clinical arguments challenging carbohydrate dietary guidelines for type 2 diabetes reversal."
+    "notes": "Dr. Sarah Hallberg explains the hormonal etiology of insulin resistance and challenges standard high-carbohydrate guidelines."
   },
   {
     "youtubeVideoId": "sample-finance-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-finance-01",
-    "title": "Index Funds, Stock Picking & Market Return Realities",
+    "title": "Everything You Need to Know About Finance & Investing | Bill Ackman (Big Think)",
     "category": "financial",
-    "targetOutcome": "unverified",
-    "notes": "The Plain Bagel breaks down speculative 'guaranteed return' claims vs verifiable S&P 500 compound growth."
+    "targetOutcome": "high_confidence",
+    "notes": "Pershing Square CEO Bill Ackman teaches balance sheets, equity financing, debt leverage, and capital allocation."
   },
   {
     "youtubeVideoId": "sample-factcheck-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-factcheck-01",
-    "title": "Viral Immune System Claims & Clinical Science",
+    "title": "How The Immune System Actually Works | Kurzgesagt – In a Nutshell",
     "category": "health",
     "targetOutcome": "high_confidence",
-    "notes": "Accredited fact-checkers verify human immune defense mechanisms, blood pH buffering, and vaccine clinical trial standards."
+    "notes": "Kurzgesagt visualizes the cellular mechanisms of innate immunity, macrophages, neutrophils, and adaptive memory T-cells."
   }
 ]

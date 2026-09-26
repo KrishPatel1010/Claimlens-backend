@@ -1,0 +1,22 @@
+{
+  "claims": [
+    {
+      "text": "Some activated T cells become memory T cells that stay in the lymph node and make you practically immune against this enemy.",
+      "claimant": "Immunology Education Series",
+      "claimDate": "2023-08-15T00:00:00Z",
+      "claimReview": [
+        {
+          "publisher": {
+            "name": "World Health Organization Immunization Standards",
+            "site": "who.int"
+          },
+          "url": "https://www.who.int/news-room/feature-stories/detail/how-immunological-memory-works",
+          "title": "Immunological memory mediated by long-lived antigen-specific memory T lymphocytes",
+          "reviewDate": "2023-08-20T00:00:00Z",
+          "textualRating": "True",
+          "languageCode": "en"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "search_metadata": {
+    "id": "serp_demo_scholar_h01_04",
+    "status": "Success",
+    "engine": "google_scholar",
+    "query": "carbohydrate insulin model energy balance hall meta-analysis",
+    "created_at": "2026-09-25T08:30:45.000Z"
+  },
+  "search_parameters": {
+    "engine": "google_scholar",
+    "q": "carbohydrate insulin model energy balance hall meta-analysis",
+    "hl": "en"
+  },
+  "organic_results": [
+    {
+      "position": 1,
+      "title": "The energy balance model of obesity: beyond calories in, calories out",
+      "result_id": "scholar_res_h01_04",
+      "link": "https://scholar.google.com/scholar?q=carbohydrate+insulin+model+energy+balance+hall+meta-analysis",
+      "snippet": "While insulin stimulates lipogenesis and suppresses lipolysis biochemically, controlled human inpatient studies indicate energy expenditure and fat loss are governed predominantly by total caloric balance rather than insulin-mediated nutrient trapping.",
+      "publication_info": {
+        "summary": "The American Journal of Clinical Nutrition, 2022 - Oxford Academic"
+      }
+    }
+  ]
+}
