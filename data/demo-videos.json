@@ -2,25 +2,25 @@
   {
     "youtubeVideoId": "sample-health-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-health-01",
-    "title": "Natural Remedies & Diabetes Claims",
+    "title": "Reversing Type 2 Diabetes & Dietary Guidelines (TEDx)",
     "category": "health",
     "targetOutcome": "contested",
-    "notes": "Asserts herbal cures for diabetes; contradicts peer-reviewed consensus on PubMed/Scholar."
+    "notes": "Dr. Sarah Hallberg presents clinical arguments challenging carbohydrate dietary guidelines for type 2 diabetes reversal."
   },
   {
     "youtubeVideoId": "sample-finance-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-finance-01",
-    "title": "Guaranteed 10x Stock Market Predictions",
+    "title": "Index Funds, Stock Picking & Market Return Realities",
     "category": "financial",
     "targetOutcome": "unverified",
-    "notes": "Makes speculative return guarantees with zero verifiable historical filings on Google Finance."
+    "notes": "The Plain Bagel breaks down speculative 'guaranteed return' claims vs verifiable S&P 500 compound growth."
   },
   {
     "youtubeVideoId": "sample-factcheck-01",
     "youtubeUrl": "https://www.youtube.com/watch?v=sample-factcheck-01",
-    "title": "Viral Health Claim Debunked by Accredited Fact Checkers",
+    "title": "Viral Immune System Claims & Clinical Science",
     "category": "health",
     "targetOutcome": "high_confidence",
-    "notes": "Resolves directly via Google Fact Check Tools API with high authority rating."
+    "notes": "Accredited fact-checkers verify human immune defense mechanisms, blood pH buffering, and vaccine clinical trial standards."
   }
 ]

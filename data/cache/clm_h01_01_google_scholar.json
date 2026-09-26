@@ -3,23 +3,23 @@
     "id": "serp_demo_scholar_h01_01",
     "status": "Success",
     "engine": "google_scholar",
-    "query": "fenugreek diabetes insulin replacement meta-analysis",
+    "query": "type 2 diabetes hormonal disease insulin resistance etiology",
     "created_at": "2026-09-25T08:30:00.000Z"
   },
   "search_parameters": {
     "engine": "google_scholar",
-    "q": "fenugreek diabetes insulin replacement meta-analysis",
+    "q": "type 2 diabetes hormonal disease insulin resistance etiology",
     "hl": "en"
   },
   "organic_results": [
     {
       "position": 1,
-      "title": "Effect of fenugreek seeds on blood glucose and lipid profiles in type 2 diabetes mellitus: A systematic review and meta-analysis",
-      "result_id": "scholar_res_001",
-      "link": "https://scholar.google.com/scholar?q=fenugreek+diabetes+insulin+replacement+meta-analysis",
-      "snippet": "Meta-analysis of clinical trials indicates fenugreek seed extracts demonstrate modest reductions in fasting blood glucose (p < 0.05), but discontinuing insulin therapy presents acute diabetic ketoacidosis risk.",
+      "title": "Insulin resistance in type 2 diabetes: Pathophysiology and molecular mechanisms",
+      "result_id": "scholar_res_h01_01",
+      "link": "https://scholar.google.com/scholar?q=type+2+diabetes+hormonal+disease+insulin+resistance+etiology",
+      "snippet": "Type 2 diabetes mellitus is fundamentally a hormonal and metabolic disorder characterized by peripheral insulin resistance and progressive pancreatic beta-cell dysfunction.",
       "publication_info": {
-        "summary": "Journal of Ethnopharmacology, 2023 - Elsevier"
+        "summary": "The Lancet Diabetes & Endocrinology, 2023 - Elsevier"
       }
     }
   ]
